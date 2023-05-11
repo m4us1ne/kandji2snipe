@@ -222,7 +222,7 @@ def get_settings():
         for key in config["mac-api-mapping"]:
             kandjisplit = config["mac-api-mapping"][key].split()
             if kandjisplit[0] in validarrays:
-                logging.debug("Found valid array: {}".format(kandjisplit[0]))
+                logging.debug(f"Found valid array: {kandjisplit[0]}")
                 continue
             else:
                 logging.error(
@@ -235,7 +235,7 @@ def get_settings():
         for key in config["iphone-api-mapping"]:
             kandjisplit = config["iphone-api-mapping"][key].split()
             if kandjisplit[0] in validarrays:
-                logging.debug("Found valid array: {}".format(kandjisplit[0]))
+                logging.debug(f"Found valid array: {kandjisplit[0]}")
                 continue
             else:
                 logging.error(
@@ -248,7 +248,7 @@ def get_settings():
         for key in config["ipad-api-mapping"]:
             kandjisplit = config["ipad-api-mapping"][key].split()
             if kandjisplit[0] in validarrays:
-                logging.debug("Found valid array: {}".format(kandjisplit[0]))
+                logging.debug(f"Found valid array: {kandjisplit[0]}")
                 continue
             else:
                 logging.error(
@@ -261,7 +261,7 @@ def get_settings():
         for key in config["appletv-api-mapping"]:
             kandjisplit = config["appletv-api-mapping"][key].split()
             if kandjisplit[0] in validarrays:
-                logging.debug("Found valid array: {}".format(kandjisplit[0]))
+                logging.debug(f"Found valid array: {kandjisplit[0]}")
                 continue
             else:
                 logging.error(
@@ -289,39 +289,39 @@ def create_variables():
     # Kandji Base URL
     if config["kandji"]["region"] == "eu":
         kandji_base = f"https://{config['kandji']['tenant']}.api.eu.kandji.io"
-        logging.info("The Kandji base url is: {}".format(kandji_base))
+        logging.info(f"The Kandji base url is: {kandji_base}")
     else:
         kandji_base = f"https://{config['kandji']['tenant']}.api.kandji.io"
-        logging.info("The Kandji base url is: {}".format(kandji_base))
+        logging.info(f"The Kandji base url is: {kandji_base}")
 
     # Kandji API Token
     kandji_apitoken = config["kandji"]["apitoken"]
-    logging.debug("The Kandji API token is: {}".format(kandji_apitoken))
+    logging.debug(f"The Kandji API token is: {kandji_apitoken}")
 
     # Snipe-IT base URL, API key, default status, and Apple manufacturer ID
     snipe_base = config["snipe-it"]["url"]
-    logging.info("The Snipe-IT base url is: {}".format(snipe_base))
+    logging.info(f"The Snipe-IT base url is: {snipe_base}")
     snipe_apikey = config["snipe-it"]["apikey"]
-    logging.debug("The Snipe-IT API key is: {}".format(snipe_apikey))
+    logging.debug(f"The Snipe-IT API key is: {snipe_apikey}")
     defaultStatus = config["snipe-it"]["defaultStatus"]
     logging.info(
-        "Status ID for new assets created in Snipe-IT: {}".format(defaultStatus)
+        f"Status ID for new assets created in Snipe-IT: {defaultStatus}"
     )
     apple_manufacturer_id = config["snipe-it"]["manufacturer_id"]
     logging.info(
-        "The Snipe-IT manufacturer ID for Apple is: {}".format(apple_manufacturer_id)
+        f"The Snipe-IT manufacturer ID for Apple is: {apple_manufacturer_id}"
     )
 
     # Headers for the API calls
     logging.info("Creating the headers we'll need for API calls")
     kandjiheaders = {
-        "Authorization": "Bearer {}".format(kandji_apitoken),
+        "Authorization": f"Bearer {kandji_apitoken}",
         "Accept": "application/json",
         "Content-Type": "application/json;charset=utf-8",
         "Cache-Control": "no-cache",
     }
     snipeheaders = {
-        "Authorization": "Bearer {}".format(snipe_apikey),
+        "Authorization": f"Bearer {snipe_apikey}",
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
@@ -396,7 +396,7 @@ def snipe_access_test():
 # Verify that Kandji is accessible
 def kandji_access_test():
     try:
-        api_url = "{0}/api/v1/devices".format(kandji_base)
+        api_url = f"{kandji_base}/api/v1/devices"
         KANDJI_UP = True if requests.get(api_url).status_code in (200, 401) else False
     except Exception as e:
         logging.exception(e)
@@ -617,7 +617,7 @@ def get_kandji_device_activity_date(kandji_id):
 # Function to update the asset tag of devices in Kandji with an number passed from Snipe-IT.
 def update_kandji_asset_tag(kandji_id, asset_tag):
     endpoint = f"/api/v1/devices/{kandji_id}"
-    payload = '{{"asset_tag": "{}"}}'.format(asset_tag)
+    payload = f'{{"asset_tag": "{asset_tag}"}}'
     logging.debug(
         "Making PATCH request against: {}\n\tPayload for the request is: {}".format(
             kandji_base + endpoint, payload
@@ -629,7 +629,7 @@ def update_kandji_asset_tag(kandji_id, asset_tag):
 
 # Function to lookup a Snipe-IT asset by serial number.
 def search_snipe_asset(serial):
-    api_url = "{}/api/v1/hardware/byserial/{}".format(snipe_base, serial)
+    api_url = f"{snipe_base}/api/v1/hardware/byserial/{serial}"
     response = requests.get(
         api_url,
         headers=snipeheaders,
@@ -643,7 +643,7 @@ def search_snipe_asset(serial):
             if jsonresponse["total"] == 1:
                 return jsonresponse
             elif jsonresponse["total"] == 0:
-                logging.info("No assets match {}".format(serial))
+                logging.info(f"No assets match {serial}")
                 return "NoMatch"
             else:
                 logging.warning(
@@ -653,7 +653,7 @@ def search_snipe_asset(serial):
                 )
                 return "MultiMatch"
         else:
-            logging.info("No assets match {}".format(serial))
+            logging.info(f"No assets match {serial}")
             return "NoMatch"
     else:
         logging.warning(
@@ -661,7 +661,7 @@ def search_snipe_asset(serial):
                 response.text, serial
             )
         )
-        logging.debug("{} - {}".format(response.status_code, response.content))
+        logging.debug(f"{response.status_code} - {response.content}")
         return "ERROR"
 
 
@@ -706,9 +706,9 @@ def get_snipe_models():
 
 # Recursive function returns all users in a Snipe-IT Instance, 100 at a time.
 def get_snipe_users(previous=[]):
-    user_id_url = "{}/api/v1/users".format(snipe_base)
+    user_id_url = f"{snipe_base}/api/v1/users"
     payload = {"limit": 100, "offset": len(previous)}
-    logging.debug("The payload for the Snipe-IT users GET is {}".format(payload))
+    logging.debug(f"The payload for the Snipe-IT users GET is {payload}")
     response = requests.get(
         user_id_url,
         headers=snipeheaders,
@@ -752,9 +752,9 @@ def get_snipe_user_id(username):
             username
         )
     )
-    user_id_url = "{}/api/v1/users".format(snipe_base)
+    user_id_url = f"{snipe_base}/api/v1/users"
     payload = {"search": username, "limit": 1, "sort": "username", "order": "asc"}
-    logging.debug("The payload for the Snipe-IT user search is: {}".format(payload))
+    logging.debug(f"The payload for the Snipe-IT user search is: {payload}")
     response = requests.get(
         user_id_url,
         headers=snipeheaders,
@@ -770,7 +770,7 @@ def get_snipe_user_id(username):
 
 # Function that creates a new Snipe-IT model - not an asset - with a JSON payload
 def create_snipe_model(payload):
-    api_url = "{}/api/v1/models".format(snipe_base)
+    api_url = f"{snipe_base}/api/v1/models"
     logging.debug(
         "Calling to create new snipe model type against: {}\nThe payload for the POST request is:{}\nThe request headers can be found near the start of the output.".format(
             api_url, payload
@@ -800,7 +800,7 @@ def create_snipe_model(payload):
 
 # Function to create a new asset by passing array
 def create_snipe_asset(payload):
-    api_url = "{}/api/v1/hardware".format(snipe_base)
+    api_url = f"{snipe_base}/api/v1/hardware"
     logging.debug(
         "Calling to create a new asset against: {}\nThe payload for the POST request is:{}\nThe request headers can be found near the start of the output.".format(
             api_url, payload
@@ -815,7 +815,7 @@ def create_snipe_asset(payload):
     )
     logging.debug(response.text)
     if response.status_code == 200:
-        logging.debug("Got back status code: 200 - {}".format(response.content))
+        logging.debug(f"Got back status code: 200 - {response.content}")
         jsonresponse = response.json()
         if jsonresponse["status"] == "error":
             logging.error(
@@ -836,8 +836,8 @@ def create_snipe_asset(payload):
 
 # Function that updates a Snipe-IT asset with a JSON payload
 def update_snipe_asset(snipe_id, payload):
-    api_url = "{}/api/v1/hardware/{}".format(snipe_base, snipe_id)
-    logging.debug("The payload for the Snipe-IT update is: {}".format(payload))
+    api_url = f"{snipe_base}/api/v1/hardware/{snipe_id}"
+    logging.debug(f"The payload for the Snipe-IT update is: {payload}")
     response = requests.patch(
         api_url,
         headers=snipeheaders,
@@ -873,7 +873,7 @@ def update_snipe_asset(snipe_id, payload):
                     goodupdate = False
                 else:
                     logging.info(
-                        "Sucessfully updated {} with: {}".format(key, payload[key])
+                        f"Sucessfully updated {key} with: {payload[key]}"
                     )
         return goodupdate
     else:
@@ -887,9 +887,9 @@ def update_snipe_asset(snipe_id, payload):
 
 # Function that checks in an asset in Snipe-IT
 def checkin_snipe_asset(asset_id):
-    api_url = "{}/api/v1/hardware/{}/checkin".format(snipe_base, asset_id)
+    api_url = f"{snipe_base}/api/v1/hardware/{asset_id}/checkin"
     payload = {"note": "Checked in by kandji2snipe"}
-    logging.debug("The payload for the Snipe-IT checkin is: {}".format(payload))
+    logging.debug(f"The payload for the Snipe-IT checkin is: {payload}")
     response = requests.post(
         api_url,
         headers=snipeheaders,
@@ -897,9 +897,9 @@ def checkin_snipe_asset(asset_id):
         verify=user_args.do_not_verify_ssl,
         hooks={"response": request_handler},
     )
-    logging.debug("The response from Snipe-IT is: {}".format(response.json()))
+    logging.debug(f"The response from Snipe-IT is: {response.json()}")
     if response.status_code == 200:
-        logging.debug("Got back status code: 200 - {}".format(response.content))
+        logging.debug(f"Got back status code: 200 - {response.content}")
         return "CheckedOut"
     else:
         return response
@@ -907,10 +907,10 @@ def checkin_snipe_asset(asset_id):
 
 # Function that checks out an asset in Snipe-IT
 def checkout_snipe_asset(user, asset_id, asset_name, checked_out_user=None):
-    logging.debug("Checking out {} (ID: {}) to {}".format(asset_name, asset_id, user))
+    logging.debug(f"Checking out {asset_name} (ID: {asset_id}) to {user}")
     user_id = get_snipe_user_id(user)
     if user_id == "NotFound":
-        logging.info("User {} not found in Snipe-IT, skipping check out".format(user))
+        logging.info(f"User {user} not found in Snipe-IT, skipping check out")
         return "NotFound"
     if checked_out_user == None:
         logging.info(
@@ -920,7 +920,7 @@ def checkout_snipe_asset(user, asset_id, asset_name, checked_out_user=None):
         )
     elif checked_out_user == "NewAsset":
         logging.info(
-            "First time this asset will be checked out, checking out to {}".format(user)
+            f"First time this asset will be checked out, checking out to {user}"
         )
     else:
         logging.info(
@@ -929,14 +929,14 @@ def checkout_snipe_asset(user, asset_id, asset_name, checked_out_user=None):
             )
         )
         checkin_snipe_asset(asset_id)
-    api_url = "{}/api/v1/hardware/{}/checkout".format(snipe_base, asset_id)
-    logging.info("Checking out {} (ID: {}) to {}.".format(asset_name, asset_id, user))
+    api_url = f"{snipe_base}/api/v1/hardware/{asset_id}/checkout"
+    logging.info(f"Checking out {asset_name} (ID: {asset_id}) to {user}.")
     payload = {
         "checkout_to_type": "user",
         "assigned_user": user_id,
         "note": "Checked out by kandji2snipe.",
     }
-    logging.debug("The payload for the Snipe-IT checkin is: {}".format(payload))
+    logging.debug(f"The payload for the Snipe-IT checkin is: {payload}")
     response = requests.post(
         api_url,
         headers=snipeheaders,
@@ -944,9 +944,9 @@ def checkout_snipe_asset(user, asset_id, asset_name, checked_out_user=None):
         verify=user_args.do_not_verify_ssl,
         hooks={"response": request_handler},
     )
-    logging.debug("The response from Snipe-IT is: {}".format(response.json()))
+    logging.debug(f"The response from Snipe-IT is: {response.json()}")
     if response.status_code == 200:
-        logging.debug("Got back status code: 200 - {}".format(response.content))
+        logging.debug(f"Got back status code: 200 - {response.content}")
         return "CheckedOut"
     else:
         logging.error(
@@ -987,7 +987,7 @@ create_variables()
 
 # Report if we're verifying SSL or not for Snipe-IT
 logging.info(
-    "SSL Verification for Snipe-IT is set to: {}".format(user_args.do_not_verify_ssl)
+    f"SSL Verification for Snipe-IT is set to: {user_args.do_not_verify_ssl}"
 )
 
 # Do some tests to see if the hosts are accessible
@@ -1021,7 +1021,7 @@ for model in snipemodels["rows"]:
         )
         continue
     modelnumbers[model["model_number"]] = model["id"]
-logging.info("Our list of models has {} entries.".format(len(modelnumbers)))
+logging.info(f"Our list of models has {len(modelnumbers)} entries.")
 logging.debug(
     "Here's the list of the {} models and their id's that we were able to collect:\n{}".format(
         len(modelnumbers), modelnumbers
@@ -1060,7 +1060,7 @@ else:
 # Make sure we have a good list.
 if TotalNumber != None:
     logging.info(
-        "Received a list of Kandji assets that had {} entries.".format(TotalNumber)
+        f"Received a list of Kandji assets that had {TotalNumber} entries."
     )
 else:
     logging.error(
@@ -1201,32 +1201,32 @@ for kandji_device_type in kandji_device_types:
                         tag_split = config["asset-tag"]["pattern_mac"].split()
                         kandji_asset_tag = (
                             tag_split[0]
-                            + kandji["{}".format(tag_split[1])][
-                                "{}".format(tag_split[2])
+                            + kandji[f"{tag_split[1]}"][
+                                f"{tag_split[2]}"
                             ]
                         )
                     elif kandji_device_type == "iphone":
                         tag_split = config["asset-tag"]["pattern_iphone"].split()
                         kandji_asset_tag = (
                             tag_split[0]
-                            + kandji["{}".format(tag_split[1])][
-                                "{}".format(tag_split[2])
+                            + kandji[f"{tag_split[1]}"][
+                                f"{tag_split[2]}"
                             ]
                         )
                     elif kandji_device_type == "ipad":
                         tag_split = config["asset-tag"]["pattern_ipad"].split()
                         kandji_asset_tag = (
                             tag_split[0]
-                            + kandji["{}".format(tag_split[1])][
-                                "{}".format(tag_split[2])
+                            + kandji[f"{tag_split[1]}"][
+                                f"{tag_split[2]}"
                             ]
                         )
                     elif kandji_device_type == "appletv":
                         tag_split = config["asset-tag"]["pattern_appletv"].split()
                         kandji_asset_tag = (
                             tag_split[0]
-                            + kandji["{}".format(tag_split[1])][
-                                "{}".format(tag_split[2])
+                            + kandji[f"{tag_split[1]}"][
+                                f"{tag_split[2]}"
                             ]
                         )
                 else:
@@ -1254,8 +1254,8 @@ for kandji_device_type in kandji_device_types:
                 "status_id": defaultStatus,
                 "serial": kandji["hardware_overview"]["serial_number"],
             }
-            for snipekey in config["{}-api-mapping".format(kandji_device_type)]:
-                kandjisplit = config["{}-api-mapping".format(kandji_device_type)][
+            for snipekey in config[f"{kandji_device_type}-api-mapping"]:
+                kandjisplit = config[f"{kandji_device_type}-api-mapping"][
                     snipekey
                 ].split()
                 try:
@@ -1263,7 +1263,7 @@ for kandji_device_type in kandji_device_types:
                         try:
                             item = int(item)
                         except ValueError:
-                            logging.debug("{} is not an integer".format(item))
+                            logging.debug(f"{item} is not an integer")
                         if i == 0:
                             kandji_value = kandji[item]
                         else:
@@ -1350,16 +1350,16 @@ for kandji_device_type in kandji_device_types:
                     logging.info("Device name changed in Kandji... Updating Snipe-IT")
                     updates = {"name": kandji["general"]["device_name"]}
 
-                for snipekey in config["{}-api-mapping".format(kandji_device_type)]:
+                for snipekey in config[f"{kandji_device_type}-api-mapping"]:
                     try:
                         kandjisplit = config[
-                            "{}-api-mapping".format(kandji_device_type)
+                            f"{kandji_device_type}-api-mapping"
                         ][snipekey].split()
                         for i, item in enumerate(kandjisplit):
                             try:
                                 item = int(item)
                             except ValueError:
-                                logging.debug("{} is not an integer".format(item))
+                                logging.debug(f"{item} is not an integer")
                             if i == 0:
                                 kandji_value = kandji[item]
                             else:
@@ -1501,4 +1501,4 @@ for kandji_device_type in kandji_device_types:
                     logging.info("Updating device record")
 
 if user_args.ratelimited:
-    logging.debug("Total amount of API calls made: {}".format(snipe_api_count))
+    logging.debug(f"Total amount of API calls made: {snipe_api_count}")
